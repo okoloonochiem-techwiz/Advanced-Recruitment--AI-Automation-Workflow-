@@ -8,6 +8,41 @@ An n8n-based recruitment workflow that receives applicant documents, routes supp
 
 The workflow is designed to reduce repetitive recruitment administration by automating document intake, file handling, text extraction, AI-assisted candidate processing, and result recording.
 
+## System organogram
+
+The diagram below shows the workflow structure based on the supplied n8n screenshot.
+
+```mermaid
+flowchart TD
+    A([Gmail Trigger<br/>Where Resume Drops]) --> B[Upload File to Google Drive]
+    B --> C{Switch<br/>File Type}
+
+    C -->|PDF| D[Get PDF]
+    D --> E[Text Extractor from PDF]
+
+    C -->|Text| F[Get Text]
+    F --> G[Text Extractor from Text]
+
+    C -->|Word document| H[Convert Word to Google Doc]
+    H --> I[Get Google Doc]
+    I --> J[Text Extractor from Converted Document]
+
+    E --> K[Edit Fields]
+    G --> K
+    J --> K
+
+    K --> L[Application Lookup Description<br/>Google Drive]
+    L --> M[Text Extractor from Job Description PDF]
+
+    M --> N[Recruiter Agent]
+    K --> N
+    O[OpenAI Chat Model] -. model .-> N
+    P[Structured Output Parser] -. structured output .-> N
+
+    N --> Q[Information Extractor]
+    Q --> R[(Append Candidate Result<br/>Google Sheets)]
+```
+
 ## Technology stack
 
 - n8n — workflow orchestration
